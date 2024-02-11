@@ -85,5 +85,96 @@ module.exports = {
     where category.product_category_code = ? ;`
      const result = await db.mysqlHelpers.runQueryWithParameters(query, categoryCode)
      return result
+  },
+
+
+
+  /**
+   * @name validateProductCode
+   * @function
+   * @instance
+   * @memberof module:repository/product
+   * @param {String} productCode The brand code
+   * @returns {boolean} The boolean status of validation
+   */
+  validateProductCode: async function (productCode) {
+    const query = `SELECT EXISTS (SELECT 1 FROM product WHERE product_code = ?) as isExist;`
+
+    const [{ isExist }] = await db.mysqlHelpers.runQueryWithParameters(query, productCode)
+    return !!(isExist)
+  },
+
+  /**
+   * @name getProductDetails
+   * @function
+   * @instance
+   * @memberof module:repository/product
+   * @param {String} productCode The product code
+   * @returns {productDetailsList[]} The product detail {@link module:repository/product~productDetailsList}
+   */
+  getProductDetails: async function (productCode) {
+    const query = `select brand.product_brand_code as productBrandCode,
+    brand.product_brand_name as productBrandName, category.product_category_code as productCategoryCode,
+    category.product_category_name as productCategoryName, product.product_code as productCode,
+    product.product_title as productTitle, product.product_description as productDescription,
+    product.product_image_url as productImageUrl, product.product_price as productPrice
+    from product_category as category
+    inner join product_brand as brand on brand.product_category_unique_fk = category.product_category_unique_id
+    inner join product on product.product_brand_unique_fk = brand.product_brand_unique_id
+    where product.product_code = ? ;`
+     const result = await db.mysqlHelpers.runQueryWithParameters(query, productCode)
+     return result
+  },
+
+  /**
+   * @name getAboutProduct
+   * @function
+   * @instance
+   * @memberof module:repository/product
+   * @param {String} productCode The product code
+   * @returns {aboutProductList[]} The about product details {@link module:repository/product~aboutProductList}
+   */
+  /**
+   * @inner
+   * @typedef {Object} aboutProductList
+   * @property {String} aboutProductList.aboutProductDescription The about product description
+   */
+  getAboutProduct: async function (productCode) {
+    const query = `select about.about_product_description as aboutProductDescription
+    from about_product as about
+    inner join product on product.product_unique_id = about.product_unique_fk
+    where product.product_code = ? ;`
+     const result = await db.mysqlHelpers.runQueryWithParameters(query, productCode)
+     return result
+  },
+
+  /**
+   * @name validateCategoryCode
+   * @function
+   * @instance
+   * @memberof module:repository/product
+   * @param {String} categoryCode The category code
+   * @returns {boolean} The boolean status of validation
+   */
+  validateCategoryCode: async function (categoryCode) {
+    const query = `SELECT EXISTS (SELECT 1 FROM product_category WHERE product_category_code = ?) as isExist;`
+
+    const [{ isExist }] = await db.mysqlHelpers.runQueryWithParameters(query, categoryCode)
+    return !!(isExist)
+  },
+
+  /**
+   * @name validateBrandCode
+   * @function
+   * @instance
+   * @memberof module:repository/product
+   * @param {String} brandCode The brand code
+   * @returns {boolean} The boolean status of validation
+   */
+  validateBrandCode: async function (brandCode) {
+    const query = `SELECT EXISTS (SELECT 1 FROM product_brand WHERE product_brand_code = ?) as isExist;`
+
+    const [{ isExist }] = await db.mysqlHelpers.runQueryWithParameters(query, brandCode)
+    return !!(isExist)
   }
 }

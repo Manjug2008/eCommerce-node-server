@@ -14,6 +14,14 @@ class GetCatogeryProductsController {
  
     const metaLogger = logger.logWithMetaData(requestId, req.originalUrl)
 
+    metaLogger.info('Checking if the category code is valid')
+    const isCategoryValid = await this.productRepository.validateCategoryCode(categoryCode)
+    if (isCategoryValid === false) {
+      metaLogger.error('This category code is not valid')
+      return res.status(400).json({ message: 'This category code is not valid' })
+    }
+
+
     metaLogger.info('Fetch all products associated with brand')
     const listOfCategoryProducts = await this.productRepository.getCategoryProducts(categoryCode)
     

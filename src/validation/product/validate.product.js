@@ -11,5 +11,11 @@ module.exports = {
   getProductAssociatedWithCategoryCode: {
     categoryCode: Joi.string().required(),
     
+  },
+
+  /** get/products/:productCode/details */
+  getProductDetailsAssociatedWithCode: {
+    productCode: Joi.string().required(),
+    
   }
 }
